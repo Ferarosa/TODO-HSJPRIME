@@ -1,13 +1,12 @@
 import React from 'react'
-import TodoItem from './TodoItem.jsx'
-import TodoCreator from './TodoCreator.jsx'
+import TodoList from './TodoList.jsx'
+import TodoForm from './TodoForm.jsx'
 
 class Todo extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      todos: [],
-      id: 0
+      todos: []
     }
     this.createTodo = this.createTodo.bind(this)
     this.updateTodo = this.updateTodo.bind(this)
@@ -15,41 +14,35 @@ class Todo extends React.Component {
   }
 
   createTodo (todo) {
-    const { todos, id } = this.state
-    const nextId = (id + 1)
-    todo.id = nextId
-    this.setState({
-      todos: [...todos, todo],
-      id: nextId
-    })
+    this.setState((prevState) => ({
+      todos: [...prevState.todos, todo]
+    }))
   }
 
   updateTodo (payload) {
-    const { id, title, description } = payload
-    const { todos } = this.state
-    const targetTodo = todos.find(todo => todo.id === id)
-    targetTodo.title = title
-    targetTodo.description = description
-    this.setState()
+    this.setState((prevState) => ({
+      todos: prevState.todos.map(todo => {
+        if (todo.id === payload.id) {
+          todo = payload
+        }
+        return todo
+      })
+    }))
   }
 
   deleteTodo (id) {
-    const { todos } = this.state
-    todos.splice(todos.findIndex(todo => todo.id === id), 1)
-    this.setState()
+    this.setState((prevState) => ({
+      todos: prevState.todos.filter(todo => todo.id !== id)
+    }))
   }
 
   render () {
     const { todos } = this.state
     return (
-        <>
-            <TodoCreator createTodo={this.createTodo} />
-            <div className="Todo-List">
-                {
-                    todos.map(todo => <TodoItem key={todo.id} todo={todo} />)
-                }
-            </div>
-        </>
+      <>
+        <TodoForm createTodo={this.createTodo} />
+        <TodoList todos={todos} />
+      </>
     )
   }
 }
