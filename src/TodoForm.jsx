@@ -65,22 +65,22 @@ class TodoForm extends React.Component {
                   </label>
               </div>
               <div className="Todo-Creator__Form__Row">
-                  <label htmlFor="startTime">시작 시각
+                  <label htmlFor="startTime">시작 일자
                     <input
                       id="startTime"
                       name="startTime"
-                      type="datetime-local"
+                      type="date"
                       value={startTime}
                       onChange={this.handleInputChange}
                     />
                   </label>
               </div>
               <div className="Todo-Creator__Form__Row">
-                  <label htmlFor="endTime">종료 시각
+                  <label htmlFor="endTime">종료 일자
                     <input
                       id="endTime"
                       name="endTime"
-                      type="datetime-local"
+                      type="date"
                       value={endTime}
                       onChange={this.handleInputChange}
                     />
