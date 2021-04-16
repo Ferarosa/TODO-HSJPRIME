@@ -1,18 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { getCurrentDateTime } from './util'
+import { generateId } from './util'
 class TodoForm extends React.Component {
   constructor (props) {
     super(props)
-    this.id = 0
     this.state = {
       title: '',
       description: '',
-      startTime: getCurrentDateTime(),
+      startTime: '',
       endTime: ''
     }
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleTodoSubmit = this.handleTodoSubmit.bind(this)
+    this.validateTodoForm = this.validateTodoForm.bind(this)
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.props.updatingTodo !== prevProps.updatingTodo) {
+      const { title, description, startTime, endTime } = this.props.updatingTodo
+      this.setState({ title, description, startTime, endTime })
+    }
   }
 
   handleInputChange (event) {
@@ -22,9 +29,15 @@ class TodoForm extends React.Component {
   }
 
   handleTodoSubmit () {
-    const { createTodo } = this.props
-    if (this.state.title.length > 0) {
-      createTodo({ id: this.id++, ...this.state })
+    const { createTodo, isUpdating, updateEndTodo, updatingTodo } = this.props
+    const { isSubmitable, error } = this.validateTodoForm()
+    if (isSubmitable) {
+      if (isUpdating) {
+        updateEndTodo({ id: updatingTodo.id, ...this.state })
+      } else {
+        createTodo({ id: generateId(), ...this.state })
+      }
+
       this.setState({
         title: '',
         description: '',
@@ -32,15 +45,24 @@ class TodoForm extends React.Component {
         endTime: ''
       })
     } else {
-      alert('제목은 반드시 입력되어야 합니다.')
+      alert(error)
     }
   }
 
+  validateTodoForm () {
+    const { title, startTime } = this.state
+    if (!title || !startTime) {
+      return { isSubmitable: false, error: '제목과 시작일자는 반드시 입력되어야 합니다.' }
+    }
+    return { isSubmitable: true, error: '' }
+  }
+
   render () {
+    const { isUpdating } = this.props
     const { title, description, startTime, endTime } = this.state
     return (
       <div className="Todo-Creator">
-          <button className="Todo-Creator__Button" onClick={this.handleTodoSubmit}>투두 생성</button>
+          <button className="Todo-Creator__Button Todo-Interface-Button" onClick={this.handleTodoSubmit}>투두 {isUpdating ? '수정' : '생성'}</button>
           <div className="Todo-Creator__Form">
               <div className="Todo-Creator__Form__Row">
                   <label htmlFor="title">제목
