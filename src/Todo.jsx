@@ -1,7 +1,7 @@
 import React from 'react'
 import TodoList from './TodoList.jsx'
 import TodoForm from './TodoForm.jsx'
-
+import { STORAGE_NAME } from './util'
 class Todo extends React.Component {
   constructor (props) {
     super(props)
@@ -18,6 +18,16 @@ class Todo extends React.Component {
     this.updateEndTodo = this.updateEndTodo.bind(this)
     this.deleteTodo = this.deleteTodo.bind(this)
     this.completeTodo = this.completeTodo.bind(this)
+    this.saveTodo = this.saveTodo.bind(this)
+    window.addEventListener('beforeunload', this.saveTodo)
+  }
+
+  componentDidMount () {
+    const { storedTodos } = this.props
+    this.setState({
+      todos: storedTodos.filter(storedTodo => storedTodo.status === '진행중'),
+      completedTodos: storedTodos.filter(storedTodo => storedTodo.status === '완료')
+    })
   }
 
   setFilter (event) {
@@ -59,10 +69,18 @@ class Todo extends React.Component {
   }
 
   completeTodo (completedTodo) {
+    completedTodo.status = '완료'
     this.setState((prevState) => ({
       todos: prevState.todos.filter(todo => todo !== completedTodo),
       completedTodos: [...prevState.completedTodos, completedTodo]
     }))
+  }
+
+  saveTodo () {
+    if ('localStorage' in window) {
+      const { todos, completedTodos } = this.state
+      window.localStorage.setItem(STORAGE_NAME, JSON.stringify([...todos, ...completedTodos]))
+    }
   }
 
   render () {

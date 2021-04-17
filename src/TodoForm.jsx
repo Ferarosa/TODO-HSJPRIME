@@ -33,9 +33,9 @@ class TodoForm extends React.Component {
     const { isSubmitable, error } = this.validateTodoForm()
     if (isSubmitable) {
       if (isUpdating) {
-        updateEndTodo({ id: updatingTodo.id, ...this.state })
+        updateEndTodo({ id: updatingTodo.id, status: updatingTodo.status, ...this.state })
       } else {
-        createTodo({ id: generateId(), ...this.state })
+        createTodo({ id: generateId(), status: '진행중', ...this.state })
       }
 
       this.setState({
